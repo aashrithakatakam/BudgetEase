@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Dashboard Overview{% endblock %}
+
+{% block content %}
+<!-- Summary Cards -->
+<div class="dashboard-grid">
+    <div class="summary-card balance-card">
+        <div class="card-icon"><i class="fa-solid fa-wallet"></i></div>
+        <div class="card-info">
+            <h3>Remaining Balance</h3>
+            <p class="amount">${{ "%.2f"|format(remaining_balance) }}</p>
+        </div>
+    </div>
+    
+    <div class="summary-card income-card">
+        <div class="card-icon"><i class="fa-solid fa-arrow-trend-up"></i></div>
+        <div class="card-info">
+            <h3>Total Income</h3>
+            <p class="amount success">${{ "%.2f"|format(total_income) }}</p>
+        </div>
+    </div>
+    
+    <div class="summary-card expense-card">
+        <div class="card-icon"><i class="fa-solid fa-arrow-trend-down"></i></div>
+        <div class="card-info">
+            <h3>Total Expense</h3>
+            <p class="amount danger">${{ "%.2f"|format(total_expense) }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="dashboard-content-grid">
+    <!-- Category Spending -->
+    <div class="panel">
+        <div class="panel-header">
+            <h3>Spending by Category</h3>
+            {% if highest_category %}
+            <span class="badge badge-warning">Highest: {{ highest_category.category_name }}</span>
+            {% endif %}
+        </div>
+        <div class="panel-body">
+            {% if category_spending %}
+                <ul class="spending-list">
+                {% for cat in category_spending %}
+                    <li>
+                        <div class="spend-info">
+                            <span class="cat-name">{{ cat.category_name }}</span>
+                            <span class="cat-amount">${{ "%.2f"|format(cat.amount) }}</span>
+                        </div>
+                        <!-- Simple Progress Bar Calculation -->
+                        {% set percentage = (cat.amount / total_expense * 100) if total_expense > 0 else 0 %}
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: {{ percentage }}%"></div>
+                        </div>
+                    </li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p class="empty-state">No expenses recorded yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Recent Transactions -->
+    <div class="panel">
+        <div class="panel-header">
+            <h3>Recent Transactions</h3>
+            <a href="{{ url_for('view_transactions') }}" class="btn-link">View All</a>
+        </div>
+        <div class="panel-body p-0">
+            {% if recent_transactions %}
+            <table class="data-table">
+                <tbody>
+                    {% for txn in recent_transactions %}
+                    <tr>
+                        <td>
+                            <div class="txn-icon {{ 'txn-in' if txn.type == 'Income' else 'txn-out' }}">
+                                <i class="fa-solid {{ 'fa-arrow-down' if txn.type == 'Income' else 'fa-arrow-up' }}"></i>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="txn-details">
+                                <span class="txn-title">{{ txn.type }}</span>
+                                <span class="txn-date">{{ txn.date }}</span>
+                            </div>
+                        </td>
+                        <td class="text-right">
+                            <span class="txn-amount {{ 'success' if txn.type == 'Income' else 'danger' }}">
+                                {{ '+' if txn.type == 'Income' else '-' }}${{ "%.2f"|format(txn.amount) }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+                <div class="p-4"><p class="empty-state">No recent transactions.</p></div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

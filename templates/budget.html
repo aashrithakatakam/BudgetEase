@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Manage Budgets{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Set Budget Form -->
+    <div class="col-md-4">
+        <div class="panel">
+            <div class="panel-header">
+                <h3>Set Category Budget</h3>
+            </div>
+            <div class="panel-body">
+                <form method="POST" action="{{ url_for('manage_budget') }}">
+                    <div class="form-group">
+                        <label for="category_id">Category</label>
+                        <select id="category_id" name="category_id" required>
+                            <option value="">Select Category...</option>
+                            {% for cat in categories %}
+                            <option value="{{ cat.category_id }}">{{ cat.category_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="limit_amount">Budget Limit ($)</label>
+                        <input type="number" step="0.01" id="limit_amount" name="limit_amount" required placeholder="0.00">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="start_date">Start Date</label>
+                        <input type="date" id="start_date" name="start_date" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="end_date">End Date</label>
+                        <input type="date" id="end_date" name="end_date" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-block">Set Budget</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Budget List & Progress -->
+    <div class="col-md-8">
+        <div class="panel">
+            <div class="panel-header">
+                <h3>Active Budgets</h3>
+            </div>
+            <div class="panel-body">
+                {% if budgets %}
+                <div class="budget-list">
+                    {% for budget in budgets %}
+                        {% set percentage = (budget.amount_spent / budget.limit_amount * 100) if budget.limit_amount > 0 else 0 %}
+                        {% set status_class = 'success' %}
+                        {% if percentage > 90 %}
+                            {% set status_class = 'danger' %}
+                        {% elif percentage > 75 %}
+                            {% set status_class = 'warning' %}
+                        {% endif %}
+                        
+                        <div class="budget-item">
+                            <div class="budget-info">
+                                <h4>{{ budget.category_name }}</h4>
+                                <span class="budget-dates">{{ budget.start_date }} to {{ budget.end_date }}</span>
+                            </div>
+                            
+                            <div class="budget-stats">
+                                <span class="spent">${{ "%.2f"|format(budget.amount_spent) }}</span> / 
+                                <span class="limit">${{ "%.2f"|format(budget.limit_amount) }}</span>
+                            </div>
+                            
+                            <div class="progress-bar lg">
+                                <div class="progress-fill {{ status_class }}" style="width: {{ percentage if percentage <= 100 else 100}}%"></div>
+                            </div>
+                            <div class="budget-percent text-right {{ status_class }}-text">
+                                {{ "%.1f"|format(percentage) }}% Used
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                    <p class="empty-state">No budgets set. Create one to track your spending!</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

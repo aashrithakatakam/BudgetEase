@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Manage Expenses{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Add Expense Form -->
+    <div class="col-md-4">
+        <div class="panel">
+            <div class="panel-header">
+                <h3>Add New Expense</h3>
+            </div>
+            <div class="panel-body">
+                <form method="POST" action="{{ url_for('manage_expenses') }}">
+                    <div class="form-group">
+                        <label for="amount">Amount ($)</label>
+                        <input type="number" step="0.01" id="amount" name="amount" required placeholder="0.00">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="date">Date</label>
+                        <input type="date" id="date" name="date" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="category_id">Category</label>
+                        <select id="category_id" name="category_id" required>
+                            <option value="">Select Category...</option>
+                            {% for cat in categories %}
+                            <option value="{{ cat.category_id }}">{{ cat.category_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <input type="text" id="description" name="description" placeholder="Optional details">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-danger btn-block">Add Expense</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Expense List -->
+    <div class="col-md-8">
+        <div class="panel">
+            <div class="panel-header">
+                <h3>Expense History</h3>
+            </div>
+            <div class="panel-body p-0">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Category</th>
+                            <th>Description</th>
+                            <th class="text-right">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in expenses %}
+                        <tr>
+                            <td>{{ item.date }}</td>
+                            <td><span class="badge badge-info">{{ item.category_name }}</span></td>
+                            <td>{{ item.description or '-' }}</td>
+                            <td class="text-right danger">-${{ "%.2f"|format(item.amount) }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="4" class="text-center">No expense records found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

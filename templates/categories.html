@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Manage Categories{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Add Category Form -->
+    <div class="col-md-4">
+        <div class="panel">
+            <div class="panel-header">
+                <h3>New Category</h3>
+            </div>
+            <div class="panel-body">
+                <form method="POST" action="{{ url_for('manage_categories') }}">
+                    <div class="form-group">
+                        <label for="category_name">Category Name</label>
+                        <input type="text" id="category_name" name="category_name" required placeholder="e.g. Travel">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="type">Type</label>
+                        <select id="type" name="type" required>
+                            <option value="Expense">Expense</option>
+                            <option value="Income">Income</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-block">Create Category</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Category List -->
+    <div class="col-md-8">
+        <div class="panel">
+            <div class="panel-header">
+                <h3>Existing Categories</h3>
+            </div>
+            <div class="panel-body p-0">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in categories %}
+                        <tr>
+                            <td>#{{ item.category_id }}</td>
+                            <td>{{ item.category_name }}</td>
+                            <td>
+                                {% if item.type == 'Income' %}
+                                <span class="badge badge-success">Income</span>
+                                {% else %}
+                                <span class="badge badge-danger">Expense</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="3" class="text-center">No categories found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

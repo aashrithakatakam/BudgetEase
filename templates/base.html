@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinTrack - Budget Tracking System</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    {% if session.get('user_id') %}
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fa-solid fa-chart-pie"></i> FinTrack
+            </div>
+        </div>
+        <ul class="nav-links">
+            <li><a href="{{ url_for('dashboard') }}" class="nav-item"><i class="fa-solid fa-house"></i> Dashboard</a></li>
+            <li><a href="{{ url_for('manage_income') }}" class="nav-item"><i class="fa-solid fa-arrow-trend-up"></i> Income</a></li>
+            <li><a href="{{ url_for('manage_expenses') }}" class="nav-item"><i class="fa-solid fa-arrow-trend-down"></i> Expenses</a></li>
+            <li><a href="{{ url_for('view_transactions') }}" class="nav-item"><i class="fa-solid fa-list-ul"></i> Transactions</a></li>
+            <li><a href="{{ url_for('manage_budget') }}" class="nav-item"><i class="fa-solid fa-wallet"></i> Budgets</a></li>
+            <li><a href="{{ url_for('manage_categories') }}" class="nav-item"><i class="fa-solid fa-tags"></i> Categories</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <button id="theme-toggle" class="btn-icon"><i class="fa-solid fa-moon"></i></button>
+            <div class="user-info">
+                <span>{{ session.get('user_name', 'User') }}</span>
+                <a href="{{ url_for('logout') }}" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i></a>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main class="main-content {% if not session.get('user_id') %}full-width{% endif %}">
+        <header class="topbar">
+            {% if session.get('user_id') %}
+            <h2>{% block page_title %}Dashboard{% endblock %}</h2>
+            {% else %}
+            <div class="logo large"><i class="fa-solid fa-chart-pie"></i> FinTrack</div>
+            {% endif %}
+        </header>
+
+        <div class="content-wrapper">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-container">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <!-- Budget Alerts (Injected globally) -->
+            {% if alerts %}
+                <div class="alerts-container">
+                {% for alert in alerts %}
+                    <div class="alert alert-warning">
+                        <i class="fa-solid fa-triangle-exclamation"></i> {{ alert }}
+                    </div>
+                {% endfor %}
+                </div>
+            {% endif %}
+
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

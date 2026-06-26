@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block page_title %}All Transactions{% endblock %}
+
+{% block content %}
+<div class="panel">
+    <div class="panel-header flex-between">
+        <h3>Transaction History</h3>
+        
+        <!-- Filter Form -->
+        <form method="GET" action="{{ url_for('view_transactions') }}" class="filter-form">
+            <select name="type" onchange="this.form.submit()">
+                <option value="">All Types</option>
+                <option value="Income" {% if current_filter == 'Income' %}selected{% endif %}>Income Only</option>
+                <option value="Expense" {% if current_filter == 'Expense' %}selected{% endif %}>Expense Only</option>
+            </select>
+        </form>
+    </div>
+    <div class="panel-body p-0">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Type</th>
+                    <th>Date</th>
+                    <th class="text-right">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for txn in transactions %}
+                <tr>
+                    <td>#{{ txn.transaction_id }}</td>
+                    <td>
+                        {% if txn.type == 'Income' %}
+                        <span class="badge badge-success"><i class="fa-solid fa-arrow-down"></i> Income</span>
+                        {% else %}
+                        <span class="badge badge-danger"><i class="fa-solid fa-arrow-up"></i> Expense</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ txn.date }}</td>
+                    <td class="text-right {{ 'success' if txn.type == 'Income' else 'danger' }}">
+                        {{ '+' if txn.type == 'Income' else '-' }}${{ "%.2f"|format(txn.amount) }}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" class="text-center">No transactions found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
