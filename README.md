@@ -1,4 +1,4 @@
-# FinTrack - Budget Tracking System
+# BudgetTrack - Budget Tracking System
 
 FinTrack is a full-stack web application designed for comprehensive budget management. It features a modern dark/light mode interface and a robust MySQL backend that tracks incomes, expenses, categories, and budgets, with automatic transaction logging via SQL triggers.
 
